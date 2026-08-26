@@ -3,249 +3,419 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الصيدلية الداخلية - التجهيز</title>
+    <title>الصيدلية الداخلية - إدارة وتجهيز</title>
+    <!-- استدعاء خط احترافي وحديث من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --success: #2ecc71;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-            --light: #f4f7f6;
-            --border: #bdc3c7;
+            --bg-color: #f3f6f9;
+            --primary: #1e3a8a; /* أزرق طبي احترافي */
+            --secondary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --white: #ffffff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light);
-            margin: 0; padding: 20px;
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 10px;
         }
-        .dashboard {
-            max-width: 900px; margin: 0 auto;
-            background: #fff; padding: 20px;
-            border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
-        h2 { color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        
-        /* أزرار التنقل الرئيسية */
-        .main-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+
+        /* رأس الصفحة (Header) */
+        .header {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { margin: 0; font-size: 24px; color: var(--primary); font-weight: 800; }
+
+        /* القائمة العلوية (Navigation Tabs) */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: var(--white);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
         .nav-btn {
-            flex: 1; padding: 15px; font-size: 16px; font-weight: bold;
-            border: none; border-radius: 8px; cursor: pointer; color: #fff;
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
-        .btn-wards { background: var(--primary); }
-        .btn-inventory { background: #8e44ad; }
-        
-        /* تبويبات الردهات */
-        .ward-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px;}
-        .ward-tab {
-            padding: 10px 20px; background: #ecf0f1; border-radius: 20px;
-            cursor: pointer; font-weight: bold; border: 1px solid var(--border); white-space: nowrap;
-        }
-        .ward-tab.active { background: var(--primary); color: #fff; }
-        .ward-badge {
-            background: var(--danger); color: white; border-radius: 50%;
-            padding: 2px 8px; font-size: 12px; margin-right: 5px;
+        .nav-btn.active {
+            background: var(--primary);
+            color: var(--white);
         }
 
-        /* جدول الطلبيات المجمعة */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #ddd; }
-        th { background-color: var(--secondary); color: white; }
-        tr:hover { background-color: #f9f9f9; }
-        
-        .total-qty { font-size: 18px; font-weight: bold; color: var(--primary); }
-        .exceptional-row { background-color: #fff9e6; border-right: 4px solid var(--warning); }
-        
-        /* أزرار الإجراءات */
-        .action-btn { padding: 8px 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; margin-left: 5px;}
-        .btn-prep { background: var(--success); }
-        .btn-out { background: var(--danger); }
-        
-        /* حالة التجهيز */
-        .prepared { background-color: #e8f8f5 !important; opacity: 0.8; }
-        .prepared td { text-decoration: line-through; color: #7f8c8d; }
-        .prepared .total-qty { text-decoration: none; color: var(--success); }
-
-        .submit-ward-btn {
-            width: 100%; padding: 15px; background: var(--primary); color: white;
-            border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer;
+        /* البطاقات (Cards) */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
         }
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+
+        /* الحقول والنماذج (Forms) */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border 0.3s;
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: var(--secondary);
+        }
+        .radio-group {
+            display: flex; gap: 15px; margin-bottom: 20px;
+        }
+        .radio-label {
+            display: flex; align-items: center; gap: 5px; font-weight: 700; cursor: pointer;
+        }
+
+        /* الجداول (تجاوبية للهاتف) */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto; /* هذا الكود يمنع الجدول من الخروج عن الصفحة */
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* لضمان عدم تداخل النصوص */
+        }
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+            font-size: 15px;
+        }
+        th {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            font-weight: 800;
+            cursor: pointer;
+        }
+        th:hover { background-color: #e2e8f0; }
+        tr:hover { background-color: #f8fafc; }
+
+        /* الأزرار (Buttons) */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .btn:hover { opacity: 0.8; }
+        .btn-claim { background: var(--secondary); color: var(--white); }
+        .btn-prep { background: var(--success); color: var(--white); }
+        .btn-out { background: var(--danger); color: var(--white); }
+        .btn-audit { background: var(--primary); color: var(--white); }
+        .btn-save { background: var(--primary); color: var(--white); width: 100%; padding: 12px; font-size: 16px; margin-top: 10px;}
+
+        /* إخفاء الأقسام */
         .hidden { display: none; }
+
+        /* الشارات (Badges) */
+        .badge {
+            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: var(--border);
+        }
+        .badge-warning { background: #fef3c7; color: #b45309; }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <div class="main-nav">
-        <button class="nav-btn btn-wards" onclick="switchMainTab('wards')">📋 تجهيز الردهات</button>
-        <button class="nav-btn btn-inventory" onclick="switchMainTab('inventory')">⚙️ إدارة الأرصدة (الأدوية النافذة)</button>
+<div class="container">
+    <div class="header">
+        <h1>لوحة تحكم الصيدلية الداخلية</h1>
+        <div><span style="font-weight: bold; color: var(--text-muted);">مرحباً بك</span></div>
     </div>
 
-    <!-- قسم تجهيز الردهات -->
-    <div id="wardsSection">
-        <h2>الطلبات قيد التجهيز</h2>
+    <!-- أزرار التنقل الرئيسية -->
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchSection('prep-section', this)">📦 تجهيز الردهات</button>
+        <button class="nav-btn" onclick="switchSection('audit-section', this)">✅ التدقيق النهائي</button>
+        <button class="nav-btn" onclick="switchSection('add-material-section', this)">➕ إدخال الأدوية والمستلزمات</button>
+    </div>
+
+    <!-- 1. قسم تجهيز الردهات -->
+    <div id="prep-section" class="card">
+        <h2 class="card-title">طلبات الردهات الواردة اليوم</h2>
         
-        <div class="ward-tabs">
-            <div class="ward-tab active" onclick="loadWard('الباطنية رجال')">الباطنية رجال <span class="ward-badge">2</span></div>
-            <div class="ward-tab" onclick="loadWard('العناية المركزة')">العناية المركزة <span class="ward-badge">1</span></div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>اختر الردهة المراد تجهيزها:</label>
+                <select id="wardFilter">
+                    <option value="الباطنية رجال">الباطنية رجال</option>
+                    <option value="العناية المركزة">العناية المركزة</option>
+                </select>
+            </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>المادة</th>
-                    <th>الشكل</th>
-                    <th>الجرعة</th>
-                    <th>العدد الكلي للردهة</th>
-                    <th>الإجراء</th>
-                </tr>
-            </thead>
-            <tbody id="orderTableBody">
-                <!-- سيتم توليد الصفوف هنا برمجياً -->
-            </tbody>
-        </table>
-
-        <button class="submit-ward-btn" onclick="sendToAudit()">✅ الانتهاء ونقل سلة الردهة للتدقيق النهائي</button>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="alert('تم الفرز أبجدياً')">المادة (تفاضيل) ↕</th>
+                        <th onclick="alert('تم الفرز حسب الشكل')">الشكل/النوع ↕</th>
+                        <th>الجرعة/الحجم</th>
+                        <th>العدد المطلوب</th>
+                        <th>حالة الحجز</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Metronidazole</strong> <br><small class="badge">Flagyl</small></td>
+                        <td>Vial</td>
+                        <td>500 mg</td>
+                        <td><strong style="color:var(--primary); font-size:18px;">15</strong></td>
+                        <td id="status-1"><button class="btn btn-claim" onclick="claimOrder(1)">✋ استلام التجهيز</button></td>
+                        <td id="actions-1" style="opacity: 0.5; pointer-events: none;">
+                            <button class="btn btn-prep" onclick="moveToAudit(this)">تجهيز</button>
+                            <button class="btn btn-out" onclick="markOut(this)">نفاد 🔴</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Paracetamol</strong></td>
+                        <td>Tablet</td>
+                        <td>500 mg</td>
+                        <td><strong style="color:var(--primary); font-size:18px;">30</strong></td>
+                        <td id="status-2"><button class="btn btn-claim" onclick="claimOrder(2)">✋ استلام التجهيز</button></td>
+                        <td id="actions-2" style="opacity: 0.5; pointer-events: none;">
+                            <button class="btn btn-prep" onclick="moveToAudit(this)">تجهيز</button>
+                            <button class="btn btn-out" onclick="markOut(this)">نفاد 🔴</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- قسم إدارة المخزون (مخفي افتراضياً) -->
-    <div id="inventorySection" class="hidden">
-        <h2>إدارة حالة الأدوية</h2>
-        <p style="color: #7f8c8d;">الأدوية التي يتم وسمها بـ "نافذ" لن تظهر للصيادلة السريريين في قائمة الطلب (تصبح حمراء).</p>
+    <!-- 2. قسم التدقيق النهائي -->
+    <div id="audit-section" class="card hidden">
+        <h2 class="card-title">مواد بانتظار التدقيق</h2>
+        <p style="color: var(--text-muted); font-size: 14px;">هذه المواد تم تجهيزها في السلة وبانتظار المراجعة النهائية لتُرحل إلى الإحصائيات.</p>
         
-        <table>
-            <thead>
-                <tr>
-                    <th>الاسم العلمي</th>
-                    <th>الاسم التجاري</th>
-                    <th>الحالة الحالية</th>
-                    <th>تغيير الحالة</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryTableBody">
-                <!-- بيانات المخزون -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>المادة</th>
+                        <th>العدد المجهز</th>
+                        <th>تم التجهيز بواسطة</th>
+                        <th>التدقيق</th>
+                    </tr>
+                </thead>
+                <tbody id="auditTableBody">
+                    <!-- تضاف الأدوية هنا بعد تجهيزها -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 3. قسم إدخال الأدوية والمستلزمات (كما طلبت بالضبط) -->
+    <div id="add-material-section" class="card hidden">
+        <h2 class="card-title">إضافة مادة جديدة لقاعدة البيانات</h2>
+        
+        <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="materialType" value="drug" checked onchange="toggleMaterialForm()"> دواء</label>
+            <label class="radio-label"><input type="radio" name="materialType" value="supply" onchange="toggleMaterialForm()"> مستلزم طبي</label>
+        </div>
+
+        <!-- حقول الدواء -->
+        <div id="drugFields">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>الاسم العلمي (إجباري)</label>
+                    <input type="text" placeholder="مثال: Ceftriaxone">
+                </div>
+                <div class="form-group">
+                    <label>الاسم التجاري / الشائع (اختياري)</label>
+                    <input type="text" placeholder="مثال: Rocephin">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>الأشكال الدوائية المتوفرة (افصل بينها بفاصلة)</label>
+                    <input type="text" placeholder="مثال: Vial, Ampoule, Tablet">
+                </div>
+                <div class="form-group">
+                    <label>الجرع المتوفرة (افصل بينها بفاصلة)</label>
+                    <input type="text" placeholder="مثال: 1g, 500mg, 250mg">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>كلمات مفتاحية للبحث (اختياري)</label>
+                <input type="text" placeholder="مثال: مضاد حيوي، التهاب">
+            </div>
+        </div>
+
+        <!-- حقول المستلزم الطبي (تظهر عند اختياره) -->
+        <div id="supplyFields" class="hidden">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>اسم المستلزم الطبي (إجباري)</label>
+                    <input type="text" placeholder="مثال: IV Cannula">
+                </div>
+                <div class="form-group">
+                    <label>الاسم الشائع (اختياري)</label>
+                    <input type="text" placeholder="مثال: كانيولا">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>الأنواع / الأحجام المتوفرة (افصل بينها بفاصلة)</label>
+                    <input type="text" placeholder="مثال: 18G Green, 20G Pink, 22G Blue">
+                </div>
+                <div class="form-group">
+                    <label>كلمات مفتاحية للبحث (اختياري)</label>
+                    <input type="text" placeholder="مثال: وريد، زرق">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-save" onclick="alert('تم حفظ المادة في قاعدة البيانات، وستظهر الآن في قوائم الردهات.')">حفظ المادة في القائمة</button>
     </div>
 
 </div>
 
 <script>
-    // 1. محاكاة لطلبات قادمة من الردهة (خلف الكواليس، النظام قام بجمعها)
-    // لاحظ كيف جمعنا طلبات مرضى الباطنية لـ Flagyl وجعلناها رقماً واحداً (15)
-    let aggregatedOrders = [
-        { id: 1, name: "Metronidazole (Flagyl)", form: "Vial", dose: "500 mg", totalQty: 15, isExceptional: false, prepared: false },
-        { id: 2, name: "Paracetamol", form: "Tablet", dose: "500 mg", totalQty: 30, isExceptional: false, prepared: false },
-        { id: 3, name: "Clexane (Enoxaparin)", form: "Prefilled Syringe", dose: "4000 IU", totalQty: 2, isExceptional: true, note: "مطلوب بشكل طارئ - مريض جلطة", prepared: false }
-    ];
-
-    // 2. محاكاة لقاعدة بيانات الأدوية للتحكم بالتوفر
-    let inventory = [
-        { id: 1, name: "Metronidazole", brand: "Flagyl", available: true },
-        { id: 2, name: "Ceftriaxone", brand: "Rocephin", available: false }, // نافذ حالياً
-        { id: 3, name: "Paracetamol", brand: "Perfalgan", available: true }
-    ];
-
-    // التبديل بين شاشة الردهات وشاشة الرصيد
-    function switchMainTab(tab) {
-        document.getElementById('wardsSection').classList.toggle('hidden', tab !== 'wards');
-        document.getElementById('inventorySection').classList.toggle('hidden', tab !== 'inventory');
-        if(tab === 'inventory') renderInventory();
-    }
-
-    // رسم جدول طلبات الردهة
-    function renderOrders() {
-        const tbody = document.getElementById('orderTableBody');
-        tbody.innerHTML = '';
+    // التنقل بين الأقسام
+    function switchSection(sectionId, btn) {
+        document.getElementById('prep-section').classList.add('hidden');
+        document.getElementById('audit-section').classList.add('hidden');
+        document.getElementById('add-material-section').classList.add('hidden');
         
-        aggregatedOrders.forEach((order, index) => {
-            const row = document.createElement('tr');
-            if (order.prepared) row.className = 'prepared';
-            if (order.isExceptional && !order.prepared) row.classList.add('exceptional-row');
-            
-            // إضافة ملاحظة الطلب الاستثنائي إن وجدت
-            const nameDisplay = order.isExceptional 
-                ? `<b>${order.name}</b> <br><small style="color:var(--danger)">⚠️ استثنائي: ${order.note}</small>` 
-                : `<b>${order.name}</b>`;
-
-            row.innerHTML = `
-                <td>${nameDisplay}</td>
-                <td>${order.form}</td>
-                <td>${order.dose}</td>
-                <td class="total-qty">${order.totalQty}</td>
-                <td>
-                    ${!order.prepared ? 
-                        `<button class="action-btn btn-prep" onclick="markPrepared(${index})">تجهيز</button>
-                         <button class="action-btn btn-out" onclick="markOutOfStock('${order.name}', ${index})">نفاد</button>` 
-                        : '<span style="color:var(--success); font-weight:bold;">تم التجهيز ✓</span>'
-                    }
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        document.getElementById(sectionId).classList.remove('hidden');
+        
+        const navBtns = document.querySelectorAll('.nav-btn');
+        navBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     }
 
-    // تجهيز الدواء (شطب السطر)
-    function markPrepared(index) {
-        aggregatedOrders[index].prepared = true;
-        renderOrders();
-    }
-
-    // إعلان نفاذ الدواء (السحر يحدث هنا)
-    function markOutOfStock(drugName, index) {
-        if(confirm(`هل أنت متأكد من نفاذ ${drugName}؟ سيتم حظره من شاشات جميع الردهات فوراً!`)) {
-            // 1. إزالة الطلب من قائمة التجهيز
-            aggregatedOrders.splice(index, 1);
-            
-            // 2. تحديث قاعدة البيانات المركزية (تصبح available: false)
-            // في الواقع يتم إرسال هذا التحديث لـ Firebase
-            alert(`تم تحويل ${drugName} إلى حالة (غير متوفر 🔴). لن يتمكن الصيادلة السريريون من طلبه بعد الآن.`);
-            
-            renderOrders();
+    // التبديل بين نموذج الدواء ونموذج المستلزم
+    function toggleMaterialForm() {
+        const type = document.querySelector('input[name="materialType"]:checked').value;
+        if(type === 'drug') {
+            document.getElementById('drugFields').classList.remove('hidden');
+            document.getElementById('supplyFields').classList.add('hidden');
+        } else {
+            document.getElementById('drugFields').classList.add('hidden');
+            document.getElementById('supplyFields').classList.remove('hidden');
         }
     }
 
-    // إرسال الطلبية للتدقيق
-    function sendToAudit() {
-        const allPrepared = aggregatedOrders.every(o => o.prepared);
-        if (!allPrepared) {
-            alert('يجب التعامل مع جميع الأدوية (إما تجهيز أو إعلان نفاذ) قبل نقل السلة للتدقيق!');
-            return;
+    // استلام تجهيز الطلبية (منع التضارب)
+    function claimOrder(id) {
+        // تغيير حالة الحجز
+        document.getElementById('status-' + id).innerHTML = '<span class="badge badge-warning">قيد التجهيز (بواسطتك)</span>';
+        
+        // تفعيل أزرار التجهيز والنفاذ
+        const actions = document.getElementById('actions-' + id);
+        actions.style.opacity = '1';
+        actions.style.pointerEvents = 'auto';
+    }
+
+    // نقل المادة إلى قسم التدقيق بعد تجهيزها
+    function moveToAudit(btn) {
+        const row = btn.closest('tr');
+        const itemName = row.cells[0].innerText;
+        const qty = row.cells[3].innerText;
+        
+        // إضافة للصف في جدول التدقيق
+        const auditTable = document.getElementById('auditTableBody');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${itemName}</td>
+            <td><strong style="color:var(--primary);">${qty}</strong></td>
+            <td>صيدلي (المُجهّز)</td>
+            <td><button class="btn btn-audit" onclick="finalizeAudit(this)">تم التدقيق الاعتماد</button></td>
+        `;
+        auditTable.appendChild(newRow);
+        
+        // إخفاء الصف من شاشة التجهيز
+        row.remove();
+        alert('تم نقل المادة إلى قسم التدقيق.');
+    }
+
+    // الاعتماد النهائي للتدقيق
+    function finalizeAudit(btn) {
+        const row = btn.closest('tr');
+        row.remove();
+        alert('تم التدقيق بنجاح! تم ترحيل البيانات للإحصائيات.');
+    }
+
+    // الإعلان عن نفاذ المادة
+    function markOut(btn) {
+        const row = btn.closest('tr');
+        if(confirm('هل أنت متأكد أن هذه المادة غير متوفرة؟ سيتحول لونها للأحمر في جميع شاشات الردهات.')) {
+            row.remove();
         }
-        alert('تم رفع سلة ردهة (الباطنية رجال) إلى قسم التدقيق بنجاح!');
-        aggregatedOrders = []; // تصفير الجدول
-        renderOrders();
     }
-
-    // --- قسم إدارة المخزون ---
-    function renderInventory() {
-        const tbody = document.getElementById('inventoryTableBody');
-        tbody.innerHTML = '';
-        inventory.forEach((drug, index) => {
-            const row = document.createElement('tr');
-            const statusText = drug.available ? '<span style="color:var(--success)">متوفر 🟢</span>' : '<span style="color:var(--danger)">نافذ 🔴</span>';
-            const actionBtn = drug.available 
-                ? `<button class="action-btn btn-out" onclick="toggleStock(${index}, false)">إعلان نفاذ</button>`
-                : `<button class="action-btn btn-prep" onclick="toggleStock(${index}, true)">إعادة توفير</button>`;
-                
-            row.innerHTML = `
-                <td>${drug.name}</td>
-                <td>${drug.brand}</td>
-                <td><b>${statusText}</b></td>
-                <td>${actionBtn}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function toggleStock(index, isAvailable) {
-        inventory[index].available = isAvailable;
-        // هنا يتم إرسال الإشارة لـ Firebase ليتم تحديث هواتف السريريين فوراً
-        renderInventory();
-    }
-
-    // التشغيل الأولي
-    window.onload = () => renderOrders();
 </script>
 </body>
 </html>
