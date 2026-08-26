@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة طلبيات الأدوية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #e0e0e0;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        .tab.active {
+            background: #3498db;
+            color: #fff;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-submit:hover {
+            background: #27ae60;
+        }
+        /* إخفاء العناصر عند الحاجة */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>واجهة الصيدلة السريرية</h2>
+    
+    <!-- أزرار التنقل بين الطلب والاسترداد -->
+    <div class="tabs">
+        <div class="tab active" id="tab-request" onclick="switchTab('request')">طلب أدوية</div>
+        <div class="tab" id="tab-return" onclick="switchTab('return')">استرداد فائض</div>
+    </div>
+
+    <!-- نموذج إدخال البيانات -->
+    <form id="orderForm">
+        <div class="form-group">
+            <label for="pharmacistName">اسم الصيدلي السريري</label>
+            <input type="text" id="pharmacistName" placeholder="أدخل اسمك" required>
+        </div>
+
+        <div class="form-group">
+            <label for="wardName">الردهة</label>
+            <select id="wardName" required>
+                <option value="">-- اختر الردهة --</option>
+                <option value="الباطنية رجال">الباطنية رجال</option>
+                <option value="الباطنية نساء">الباطنية نساء</option>
+                <option value="الجراحة">الجراحة</option>
+                <option value="العناية المركزة">العناية المركزة</option>
+            </select>
+        </div>
+
+        <!-- الحقل الجديد: اسم المريض (يختفي في حالة الاسترداد) -->
+        <div class="form-group" id="patientGroup">
+            <label for="patientName">اسم المريض</label>
+            <input type="text" id="patientName" placeholder="أدخل اسم المريض (مثال: محمد علي)" required>
+        </div>
+
+        <div class="form-group">
+            <label for="drugName">اسم الدواء / المستلزم</label>
+            <input type="text" id="drugName" placeholder="مثال: Flagyl أو Metronidazole" required>
+        </div>
+
+        <div class="form-group">
+            <label for="drugForm">الشكل الدوائي</label>
+            <select id="drugForm" required>
+                <option value="">-- اختر الشكل --</option>
+                <option value="فيال (Vial)">فيال (Vial)</option>
+                <option value="أمبولة (Ampoule)">أمبولة (Ampoule)</option>
+                <option value="حبوب (Tablet)">حبوب (Tablet)</option>
+                <option value="شراب (Syrup)">شراب (Syrup)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dose">الجرعة / التركيز</label>
+            <input type="text" id="dose" placeholder="مثال: 500 mg" required>
+        </div>
+
+        <div class="form-group">
+            <label id="quantityLabel" for="quantity">العدد المطلوب</label>
+            <input type="number" id="quantity" min="1" placeholder="أدخل العدد" required>
+        </div>
+
+        <button type="button" class="btn-submit" id="submitBtn">إرسال الطلب</button>
+    </form>
+</div>
+
+<script>
+    let currentMode = 'request';
+
+    function switchTab(mode) {
+        currentMode = mode;
+        const tabRequest = document.getElementById('tab-request');
+        const tabReturn = document.getElementById('tab-return');
+        const quantityLabel = document.getElementById('quantityLabel');
+        const submitBtn = document.getElementById('submitBtn');
+        const patientGroup = document.getElementById('patientGroup');
+        const patientInput = document.getElementById('patientName');
+
+        if (mode === 'request') {
+            tabRequest.classList.add('active');
+            tabReturn.classList.remove('active');
+            quantityLabel.innerText = 'العدد المطلوب';
+            submitBtn.innerText = 'إرسال الطلب للصيدلية';
+            submitBtn.style.background = '#2ecc71';
+            
+            // إظهار حقل المريض وجعله إجبارياً
+            patientGroup.classList.remove('hidden');
+            patientInput.required = true;
+        } else {
+            tabReturn.classList.add('active');
+            tabRequest.classList.remove('active');
+            quantityLabel.innerText = 'العدد المردود';
+            submitBtn.innerText = 'إرسال الاسترداد';
+            submitBtn.style.background = '#e74c3c';
+            
+            // إخفاء حقل المريض لأن الاسترداد عادة يكون للردهة بشكل عام
+            patientGroup.classList.add('hidden');
+            patientInput.required = false;
+        }
+    }
+</script>
+
+</body>
+</html>
